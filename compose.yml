@@ -45,6 +45,15 @@ services:
     networks:
       - msxphp
 
+  adminer:
+    image: adminer
+    env_file:
+      - ./adminer/.env
+    ports:
+      - 8181:8080
+    networks:
+      - msxphp
+
 volumes:
   dbdata:
 

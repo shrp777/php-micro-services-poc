@@ -6,6 +6,17 @@ Créer les fichiers .env :
 
 - ./db/.env
 - ./php/.env
+- ./adminer/.env
+
+- Adapter les variables d'environnement de ./php/.env en fonction des valeurs de connexion à la base de données.
+
+## Vérification de la connexion à la base de données
+
+- Depuis le container Docker du service Laravel :
+
+```sh
+php artisan migrate:status
+```
 
 ## NGINX
 
@@ -26,4 +37,3 @@ _Développeur logiciel web & mobile_
 Nancy (Grand Est, France)
 
 <https://shrp.dev>
-# php-micro-services-poc
