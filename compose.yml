@@ -1,0 +1,53 @@
+services:
+  tasks:
+    build:
+      context: ./tasks
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./tasks:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    env_file:
+      - ./tasks/.env
+    depends_on:
+      - db
+    networks:
+      - msxphp
+
+  nginx:
+    image: nginx:alpine
+    working_dir: /var/www
+    volumes:
+      - ./tasks:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 8080:80
+    depends_on:
+      - tasks
+    networks:
+      - msxphp
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - ./db/.env
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - msxphp
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    networks:
+      - msxphp
+
+volumes:
+  dbdata:
+
+networks:
+  msxphp:
+    driver: bridge
