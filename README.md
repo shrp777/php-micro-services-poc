@@ -4,11 +4,15 @@ Architecture à base micro services distribués (PoC).
 
 🚨 Ce projet est une preuve de concept 🚨
 
-TODO: implémenter le service auth (actuellement fake)
-TODO: implémenter le service tasks (actuellement fake)
-TODO: configurer correctement le middleware validateCsrfTokens dans ./auth/service/bootstrap/app.php
-TODO: configurer correctement le middleware validateCsrfTokens dans ./gateway/service/bootstrap/app.php
-TODO: configurer correctement le middleware validateCsrfTokens dans ./tasks/service/bootstrap/app.php
+- [ ] TODO: implémenter le service auth (actuellement fake)
+
+- [ ] TODO: implémenter le service tasks (actuellement fake)
+
+- [ ] TODO: configurer correctement le middleware validateCsrfTokens dans ./auth/service/bootstrap/app.php
+
+- [ ] TODO: configurer correctement le middleware validateCsrfTokens dans ./gateway/service/bootstrap/app.php
+
+- [ ] TODO: configurer correctement le middleware validateCsrfTokens dans ./tasks/service/bootstrap/app.php
 
 ## Installations avant de démarrer les conteneurs Docker
 
