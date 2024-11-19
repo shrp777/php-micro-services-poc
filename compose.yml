@@ -1,26 +1,26 @@
 services:
   gateway:
     build:
-      context: ./gateway
+      context: ./gateway/service
       dockerfile: Dockerfile
     working_dir: /var/www
     volumes:
-      - ./gateway:/var/www
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./gateway/service:/var/www
+      - ./gateway/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     env_file:
-      - ./gateway/.env
+      - ./gateway/service/.env
     depends_on:
       - tasks
       - auth
     networks:
       - msxphp
 
-  nginx:
+  gateway-nginx:
     image: nginx:alpine
     working_dir: /var/www
     volumes:
-      - ./gateway:/var/www
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./gateway/service:/var/www
+      - ./gateway/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 8888:80
     depends_on:
@@ -28,16 +28,42 @@ services:
     networks:
       - msxphp
 
+  auth-nginx:
+    image: nginx:alpine
+    working_dir: /var/www
+    expose:
+      - 80
+    volumes:
+      - ./auth/service:/var/www
+      - ./auth/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - auth
+    networks:
+      - msxphp
+
+  tasks-nginx:
+    image: nginx:alpine
+    working_dir: /var/www
+    expose:
+      - 80
+    volumes:
+      - ./tasks/service:/var/www
+      - ./tasks/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - tasks
+    networks:
+      - msxphp
+
   tasks:
     build:
-      context: ./tasks
+      context: ./tasks/service
       dockerfile: Dockerfile
     working_dir: /var/www
     volumes:
-      - ./tasks:/var/www
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./tasks/service:/var/www
+      - ./tasks/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     env_file:
-      - ./tasks/.env
+      - ./tasks/service/.env
     depends_on:
       - db-tasks
     networks:
@@ -45,14 +71,14 @@ services:
 
   auth:
     build:
-      context: ./auth
+      context: ./auth/service
       dockerfile: Dockerfile
     working_dir: /var/www
     volumes:
-      - ./auth:/var/www
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./auth/service:/var/www
+      - ./auth/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     env_file:
-      - ./auth/.env
+      - ./auth/service/.env
     depends_on:
       - db-auth
     networks:

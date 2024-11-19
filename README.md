@@ -1,53 +1,99 @@
 # Micro Services PHP
 
-## Installation avant de démarrer les conteneurs Docker
+Architecture à base micro services distribués (PoC).
+
+🚨 Ce projet est une preuve de concept 🚨
+
+TODO: implémenter le service auth (actuellement fake)
+TODO: implémenter le service tasks (actuellement fake)
+TODO: configurer correctement le middleware validateCsrfTokens dans ./auth/service/bootstrap/app.php
+TODO: configurer correctement le middleware validateCsrfTokens dans ./gateway/service/bootstrap/app.php
+TODO: configurer correctement le middleware validateCsrfTokens dans ./tasks/service/bootstrap/app.php
+
+## Installations avant de démarrer les conteneurs Docker
+
+Créer les fichiers .env en se basant sur les fichiers .env.example
+
+- ./db-tasks/.env
+- ./db-auth/.env
+- ./adminer/.env
+
+## Création d'un nouveau service Laravel
 
 Si nécessaire, installer __composer__ en local.
 
-Créer un projet Laravel, ou utiliser le projet existant : Tasks (./tasks) :
+Pour la création d'un nouveau service :
 
-```sh
-composer create-project --prefer-dist laravel/laravel <nom du projet>
+- Créer un dossier portant le nom du service (ex: catalog)
+- Se placer dans le dossier du service (ex: catalog)
+- Créer un fichier ./nom-du-service/php/local.ini
+
+```ini
+display_errors=On
+error_reporting=E_ALL
+memory_limit=512M
+upload_max_filesize=100M
+post_max_size=100M
 ```
 
-Créer une clé pour l'application Laravel, depuis la machine locale en se plaçant dans le dossier du projet Laravel
+- Créer un fichier ./nom-du-service/nginx/nginx.conf
+- Adapter la ligne 12 du fichier ./nom-du-service/nginx/nginx.conf en fonction du nom du service Docker (ex, catalog). Laisser le port 9000.
+
+```conf
+fastcgi_pass <nom-du-service>:9000;
+```
+
+- Depuis le dossier ./nom-du-service créer un projet nouveau projet Laravel nommé "service" avec composer :
+
+```sh
+composer create-project --prefer-dist laravel/laravel service
+```
+
+Cette commande génère un dossier "service" avec toutes les sources de l'application Laravel.
+
+- Adapter le fichier ./nom-du-service/service/.env en fonction de la connexion à la base de données souhaitée.
+- Se placer dans le dossier ./nom-du-service/service
+- Créer une clé :
 
 ```sh
 php artisan key:generate
 ```
 
-La valeur sera écrite dans le fichier <nom-du-service>/.env (ligne 3)
+La valeur de la clé sera écrite automatiquement dans le fichier ./nom-du-service/service/.env (ligne 3)
+
+Exemple :
 
 ```.env
 APP_KEY="base64:tm6gLNls3wJz3QKf1L6L6idTbpZL/NUzzaucHdgQbsM="
 ```
 
-Créer les fichiers .env :
+- Installation de l'extension API :
 
-- ./db-tasks/.env
-- ./db-auth/.env
-- ./php/.env
-- ./adminer/.env
+```sh
+php artisan install:api
+```
 
-- Adapter les variables d'environnement de ./tasks/.env en fonction des valeurs de connexion à la base de données.
+- Vérification de la connexion à la base de données
 
-## Vérification de la connexion à la base de données
-
-- Depuis le container Docker du service Laravel :
+Depuis le container Docker du service Laravel :
 
 ```sh
 php artisan migrate:status
 ```
 
-## NGINX
+Chaque service Laravel contient :
+
+- 1 dossier __nginx__ (config nginx)
+- 1 dossier __php__ (config php)
+- 1 dossier __service__ (application Laravel)
 
 Seul le service Gateway est exposé par NGINX.
 
-Adapter la ligne 12 du fichier ./nginx/nginx.conf en fonction du nom du service Docker (ici, "gateway").
+## Test
 
-```conf
-fastcgi_pass gateway:9000;
-```
+- Gateway : <http://localhost:8888>
+- Tasks : <http://localhost:8888/tasks>
+- Auth : <http://localhost:8888/auth>
 
 --
 
