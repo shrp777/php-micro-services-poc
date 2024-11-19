@@ -1,4 +1,33 @@
 services:
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./gateway:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    env_file:
+      - ./gateway/.env
+    depends_on:
+      - tasks
+      - auth
+    networks:
+      - msxphp
+
+  nginx:
+    image: nginx:alpine
+    working_dir: /var/www
+    volumes:
+      - ./gateway:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 8888:80
+    depends_on:
+      - gateway
+    networks:
+      - msxphp
+
   tasks:
     build:
       context: ./tasks
@@ -10,31 +39,44 @@ services:
     env_file:
       - ./tasks/.env
     depends_on:
-      - db
+      - db-tasks
     networks:
       - msxphp
 
-  nginx:
-    image: nginx:alpine
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
     working_dir: /var/www
     volumes:
-      - ./tasks:/var/www
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - 8080:80
+      - ./auth:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    env_file:
+      - ./auth/.env
     depends_on:
-      - tasks
+      - db-auth
     networks:
       - msxphp
 
-  db:
+  db-tasks:
     image: mysql:8.0
     env_file:
-      - ./db/.env
+      - ./db-tasks/.env
     volumes:
-      - dbdata:/var/lib/mysql
+      - db-tasks-data:/var/lib/mysql
     ports:
       - 3306:3306
+    networks:
+      - msxphp
+
+  db-auth:
+    image: mysql:8.0
+    env_file:
+      - ./db-auth/.env
+    volumes:
+      - db-auth-data:/var/lib/mysql
+    ports:
+      - 3307:3306
     networks:
       - msxphp
 
@@ -42,6 +84,14 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
+    networks:
+      - msxphp
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
     networks:
       - msxphp
 
@@ -55,7 +105,8 @@ services:
       - msxphp
 
 volumes:
-  dbdata:
+  db-tasks-data:
+  db-auth-data:
 
 networks:
   msxphp:

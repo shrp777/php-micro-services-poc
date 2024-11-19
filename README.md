@@ -2,13 +2,21 @@
 
 ## Installation avant de démarrer les conteneurs Docker
 
-Créer une clé pour l'application Laravel.
+Si nécessaire, installer __composer__ en local.
+
+Créer un projet Laravel, ou utiliser le projet existant : Tasks (./tasks) :
+
+```sh
+composer create-project --prefer-dist laravel/laravel <nom du projet>
+```
+
+Créer une clé pour l'application Laravel, depuis la machine locale en se plaçant dans le dossier du projet Laravel
 
 ```sh
 php artisan key:generate
 ```
 
-Et utiliser la valeur obtenue pour configurer le fichier ./tasks/.env
+La valeur sera écrite dans le fichier <nom-du-service>/.env (ligne 3)
 
 ```.env
 APP_KEY="base64:tm6gLNls3wJz3QKf1L6L6idTbpZL/NUzzaucHdgQbsM="
@@ -16,7 +24,8 @@ APP_KEY="base64:tm6gLNls3wJz3QKf1L6L6idTbpZL/NUzzaucHdgQbsM="
 
 Créer les fichiers .env :
 
-- ./db/.env
+- ./db-tasks/.env
+- ./db-auth/.env
 - ./php/.env
 - ./adminer/.env
 
@@ -32,10 +41,12 @@ php artisan migrate:status
 
 ## NGINX
 
-Adapter la ligne 12 du fichier ./nginx/nginx.conf en fonction du nom du service Docker (ici, "tasks").
+Seul le service Gateway est exposé par NGINX.
+
+Adapter la ligne 12 du fichier ./nginx/nginx.conf en fonction du nom du service Docker (ici, "gateway").
 
 ```conf
-fastcgi_pass tasks:9000;
+fastcgi_pass gateway:9000;
 ```
 
 --
