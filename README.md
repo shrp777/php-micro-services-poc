@@ -1,6 +1,4 @@
-# Micro Services PHP
-
-Architecture à base micro services distribués (PoC).
+# Architecture Micro Services modèle - PHP (Laravel) + Docker (PoC)
 
 🚨 Ce projet est une preuve de concept 🚨
 
